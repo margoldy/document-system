@@ -1,39 +1,48 @@
-import datetime
+from datetime import date
 
-def valid_int(text):
-    while True:
-        to_int = input(text)
-        try:
-            value = int(to_int)
-            return value
-        except ValueError:
-            print("Ошибка! Неверный формат")
+# Начальные данные (карточка документа)
+doc_name = "Паспорт РФ"
+doc_type = "Личные документы"
 
-print("=== Система учета личных документов (Проверка срока) ===")
+owner = "Не назначен"
+expiration_year = None
+status = "Новый"
 
-doc_name = input("Введите название документа: ")
-issue_year = valid_int("Введите год выдачи: ")
-validity_years = valid_int("На сколько лет выдан документ: ")
 
-expiration_year = issue_year + validity_years
-today = datetime.date.today()
-current_year = today.year
+# 1. Функция «Назначение владельца»
+def assign_owner(user_name):
+    if user_name != "":
+        print("Владелец документа успешно привязан")
+        return user_name
+    return "Владелец не указан"
 
-years_left = expiration_year - current_year
 
-print("\n--- Результат проверки ---")
-print("Документ:", doc_name)
-print("Год окончания действия:", expiration_year)
+# 2. Функция «Установка срока действия»
+def set_expiration_year(issue_year, validity_years):
+    return int(issue_year) + int(validity_years)
 
-if years_left < 0:
-    years_overdue = abs(years_left)
-    print("СТАТУС: Документ просрочен")
-    print(f"Срок действия истек {years_overdue} лет назад")
-elif years_left == 0:
-    print("СТАТУС: Внимание! Срок действия документа истекает в этом году!")
-elif years_left <= 2:
-    print("СТАТУС: Документ действителен, но скоро потребуется замена.")
-    print("Осталось лет:", years_left)
-else:
-    print("СТАТУС: Документ действителен.")
-    print("Осталось лет:", years_left)
+
+# 3. Функция «Изменение статуса»
+def check_status(exp_year):
+    current_year = date.today().year
+    if exp_year < current_year:
+        return "Просрочен (Требуется замена)"
+    elif exp_year == current_year:
+        # Тема ПР1: ветвления if-elif-else
+        return "Внимание! Истекает в этом году"
+    else:
+        return "Действителен"
+
+
+# Основной сценарий
+owner = assign_owner("Маргарита Гончарова")
+expiration_year = set_expiration_year("2016", "10")  # Выдан в 2016 на 10 лет
+status = check_status(expiration_year)
+
+# вывод результата
+print("\n=== СИСТЕМА УЧЕТА ДОКУМЕНТОВ ===")
+print(f"Документ: {doc_name}")
+print(f"Категория: {doc_type}")
+print(f"Владелец: {owner}")
+print(f"Год окончания действия: {expiration_year}")
+print(f"Текущий статус: {status}")
